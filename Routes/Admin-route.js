@@ -19,7 +19,7 @@ router.get('/blogs/:id', validate.validateParamId, controller.handleGetBlog);
 router.get('/blogs/:id/comments', validate.validateParamId, controller.handleGetBlogComments);
 
 
-router.post('/blogs', controller.handleNewBlog);
+router.post('/blogs', express.json(), controller.handleNewBlog);
 
 router.put('/blogs/:id', validate.validateParamId, express.json(), controller.handleUpdateBlog);
 

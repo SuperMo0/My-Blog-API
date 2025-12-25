@@ -13,7 +13,9 @@ export async function authenticateAdmin(req, res, next) {
 
         let targetPassword = user[0].password;
 
-        await compare(providedPassword, targetPassword)
+        let compareResult = await compare(providedPassword, targetPassword);
+
+        if (!compareResult) throw 'false';
 
         user = {
             name: user[0].name,
@@ -26,7 +28,7 @@ export async function authenticateAdmin(req, res, next) {
         res.json({ token })
 
     } catch (error) {
-        return res.status(401).send('Wrong Credentials');
+        return res.status(401).json({ message: 'Wrong Credentials' });
     }
 }
 

@@ -13,6 +13,6 @@ router.get('/:id/comments', controller.handleGetBlogComments);
 
 router.post('/:id', express.json(), controller.handleNewComment);
 
-router.post('/like/:id', controller.handleNewLike);
+router.post('/:id/like', controller.handleNewLike);
 
 export default router 

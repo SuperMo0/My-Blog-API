@@ -2,7 +2,7 @@ import pool from './pool.js'
 
 
 export async function getAllBlogs() {
-    let sql = `select id,title,created_at,likes from blogs`;
+    let sql = `select id,title,created_at,likes,published from blogs`;
     let result = await pool.query(sql);
     return result.rows;
 }
@@ -48,19 +48,28 @@ export async function insertBlog(blog, user_id) {
     return result.rows;
 }
 
+
 export async function updateBlog(id, blog) {
+    let content = blog.content;
+    let title = blog.title;
+    let published = blog.published;
+
     let sql = `update blogs
-    set title = $1
-    set content =$2
-    set published =$3
+    set content = COALESCE($2,content),
+    title = COALESCE($3,title),
+    published = COALESCE($4,published)
+    where id=$1
      `;
     try {
-        let result = await pool.query(sql, [blog.title.blog.content, blog.published]);
+        let result = await pool.query(sql, [id, content, title, published]);
         return result.rows;
     } catch (error) {
+        console.log(error);
         throw error
     }
 }
+
+
 
 
 export async function deleteBlog(id) {

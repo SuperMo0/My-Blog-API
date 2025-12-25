@@ -14,7 +14,7 @@ export async function getAllBlogComments(blog_id) {
 
 export async function getBlog(id) {
     try {
-        let sql = `select * from blog where id=$1`;
+        let sql = `select * from blogs where id=$1 and published=true`;
         let result = await pool.query(sql, [id]);
         return result.rows;
 
@@ -38,7 +38,7 @@ export async function getBlogComments(id) {
 
 export async function insertNewComment(comment, blog_id) {
     try {
-        let sql = `insert into comments values(default,$1,$2,$3,default)`;
+        let sql = `insert into comments values(default,$1,$2,$3,default) returning *`;
         let result = await pool.query(sql, [comment.author_name, comment.content, blog_id]);
         return result.rows;
 

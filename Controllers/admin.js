@@ -1,27 +1,30 @@
 import * as queries from './../db/admin-queries.js'
 
 export function handleSucessLogin(req, res) {
-    res.send('successful');
+    res.json({ message: "success" });
 }
 
 export async function handleNewBlog(req, res) {
     try {
         await queries.insertBlog(req.body, req.user.id);
-        res.send('success');
+        res.json({ message: "success" });
     } catch (error) {
         console.log(error);
         res.status(400);
-        res.send('failure');
+        res.json({ message: "failure" });
     }
 }
 
 export async function handleUpdateBlog(req, res) {
+    let id = req.params.id;
+
     try {
-        await queries.updateBlog(req.params.id, req.body)
-        res.send('success');
+        await queries.updateBlog(req.params.id, req.body);
+        res.json({ message: "success" });
+
     } catch (error) {
         res.status(400);
-        res.send('failure');
+        res.json({ message: "failure" });
     }
 }
 
@@ -29,10 +32,10 @@ export async function handleUpdateBlog(req, res) {
 export async function handleDeleteBlog(req, res) {
     try {
         await queries.deleteBlog(req.params.id)
-        res.send('success');
+        res.json({ message: "success" });
     } catch (error) {
         res.status(400);
-        res.send('failure');
+        res.json({ message: "failure" });
     }
 }
 
@@ -49,8 +52,7 @@ export async function handleGetBlog(req, res) {
         res.json({ blog: blog[0] });
     } catch (error) {
         console.log(error);
-
-        res.status(400).send("no blog");
+        res.status(400).json({ message: "success" });
     }
 }
 
@@ -61,8 +63,7 @@ export async function handleGetBlogComments(req, res) {
         res.json({ comments });
     } catch (error) {
         console.log(error);
-
-        res.status(400).send("no blog");
+        res.status(400).json({ message: "success" });
     }
 }
 
