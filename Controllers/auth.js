@@ -42,6 +42,6 @@ export function authorizeAccess(req, res, next) {
         next();
     } catch (error) {
         res.status(403);
-        res.send();
+        res.json({ message: 'failure' });
     }
 }
