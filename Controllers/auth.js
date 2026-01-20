@@ -1,47 +1,51 @@
-import { compare, hashPassword } from './../utils/password.js'
+import { compare } from './../utils/password.js'
 import * as queries from './../db/admin-queries.js'
 import * as jwt from './../utils/jwt.js'
 
-export async function authenticateAdmin(req, res, next) {
-    if (!req.body.email || !req.body.password) return res.status(400).send('failure');
+export async function authenticateAdmin(req, res) {
 
-    let email = req.body.email;
-    let providedPassword = req.body.password;
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).json({ message: 'Email and Password are required' });
+    }
 
     try {
-        let user = await queries.getAdmin(email);
+        const user = await queries.getAdmin(req.body.email);
 
-        let targetPassword = user[0].password;
-
-        let compareResult = await compare(providedPassword, targetPassword);
-
-        if (!compareResult) throw 'false';
-
-        user = {
-            name: user[0].name,
-            email: user[0].email,
-            id: user[0].id,
-            admin: true,
+        if (!user || !(await compare(req.body.password, user.password))) {
+            return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        let token = jwt.signToken(user);
-        res.json({ token })
+        const tokenPayload = {
+            name: user.name,
+            email: user.email,
+            id: user.id,
+            admin: true,
+        };
+
+        const token = jwt.signToken(tokenPayload);
+        res.json({ token });
 
     } catch (error) {
-        return res.status(401).json({ message: 'Wrong Credentials' });
+        console.error("Login Error:", error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
 
-
 export function authorizeAccess(req, res, next) {
+    const authHeader = req.header('authorization');
+
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Access denied. No token provided.' });
+    }
 
     try {
-        let token = req.header('authorization').split(' ')[1];
-        let result = jwt.verifayToken(token);
-        req.user = result;
+        const token = authHeader.split(' ')[1];
+        if (!token) throw new Error('Format Error');
+
+        const decoded = jwt.verifayToken(token);
+        req.user = decoded;
         next();
     } catch (error) {
-        res.status(403);
-        res.json({ message: 'failure' });
+        return res.status(403).json({ message: 'Invalid or expired token' });
     }
 }

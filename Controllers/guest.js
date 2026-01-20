@@ -1,51 +1,64 @@
 import * as queries from '../db/guest-queries.js'
 
 export async function handleGetAllBlogs(req, res) {
-    let blogs = await queries.getAllBlogs();
-    res.json({ blogs });
+    try {
+        let blogs = await queries.getAllBlogs();
+        res.json({ blogs });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 }
 
 export async function handleGetBlog(req, res) {
-    let id = req.params.id;
     try {
-        let blog = await queries.getBlog(id);
-        res.json({ blog: blog[0] });
+        let blog = await queries.getBlog(req.params.id);
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+        res.json({ blog });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ message: 'no blog' });
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
 
 export async function handleGetBlogComments(req, res) {
-    let id = req.params.id;
     try {
-        let comments = await queries.getBlogComments(id);
+        let comments = await queries.getBlogComments(req.params.id);
         res.json({ comments });
     } catch (error) {
-        res.status(400).json({ message: 'no blog' });
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
 
 export async function handleNewComment(req, res) {
-    let blog_id = req.params.id;
-    console.log(req.body);
+    if (!req.body.author_name || !req.body.content) {
+        return res.status(400).json({ message: "Name and Content are required" });
+    }
 
     try {
-        let result = await queries.insertNewComment(req.body, blog_id);
-        let comment = result[0];
-        res.json({ comment });
+        let comment = await queries.insertNewComment(req.body, req.params.id);
+        res.status(201).json({ comment });
     } catch (error) {
-        res.status(400).json({ message: 'failure' });
+        console.error(error);
+        if (error.code === '23503') {
+            return res.status(404).json({ message: "Blog not found" });
+        }
+        res.status(500).json({ message: 'failure' });
     }
 }
 
 export async function handleNewLike(req, res) {
-    let blog_id = req.params.id;
     try {
-        await queries.addLike(blog_id);
-        res.json({ message: 'success' });
+        const result = await queries.addLike(req.params.id);
+        if (!result) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+        res.json({ message: 'success', likes: result.likes });
     } catch (error) {
-        res.status(400).json({ message: 'failure' });
+        console.error(error);
+        res.status(500).json({ message: 'failure' });
     }
 }
-
