@@ -16,9 +16,6 @@ export async function authenticateAdmin(req, res) {
         if (!user || !(req.body.password == user.password)) {   // we should hash passwords in the database and use bcrypt compare 
             return res.status(401).json({ message: 'Invalid email or password' });
         }
-        console.log('here');
-
-
         const tokenPayload = {
             name: user.name,
             email: user.email,
