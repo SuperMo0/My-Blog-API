@@ -10,6 +10,7 @@ A full-stack blog platform featuring a public reader interface and a secure admi
 ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
+![Project Demo](./preview/app.gif)
 ## Features
 
 * **Admin Dashboard:** Secure login with JWT for creating and managing posts.
@@ -17,5 +18,4 @@ A full-stack blog platform featuring a public reader interface and a secure admi
 * **User Interaction:** Like system and comments for reader engagement.
 * **Theming:** Dark and Light mode support.
 
-
-client side code : https://github.com/SuperMo0/My-Blog
+Frontend : https://github.com/SuperMo0/My-Blog

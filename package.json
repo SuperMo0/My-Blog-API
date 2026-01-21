@@ -7,7 +7,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch index.js"
+    "postinstall": "npm install && npm install --prefix Frontend",
+    "build": "npm run build --prefix Frontend",
+    "start": "node index.js",
+    "dev": "MODE=development node --watch index.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
