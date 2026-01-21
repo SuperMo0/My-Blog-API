@@ -2,6 +2,7 @@ import pool from './pool.js'
 
 export async function getAllBlogs() {
     let sql = `select id, title, created_at, likes from blogs where published=true order by created_at desc`;
+
     let result = await pool.query(sql);
     return result.rows;
 }
@@ -32,6 +33,17 @@ export async function addLike(blog_id) {
     let sql = `
         update blogs 
         set likes = likes + 1 
+        where id=$1 and published=true
+        returning likes
+    `;
+    let result = await pool.query(sql, [blog_id]);
+    return result.rows[0];
+}
+
+export async function removeLike(blog_id) {
+    let sql = `
+        update blogs 
+        set likes = likes - 1
         where id=$1 and published=true
         returning likes
     `;

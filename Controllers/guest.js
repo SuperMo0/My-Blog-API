@@ -52,7 +52,17 @@ export async function handleNewComment(req, res) {
 
 export async function handleNewLike(req, res) {
     try {
-        const result = await queries.addLike(req.params.id);
+        const liked = req.body.liked;
+        let result;
+        if (liked == undefined) {
+            return res.stats(400).json({ message: 'Bad request', });
+        }
+        if (liked) {
+            result = await queries.addLike(req.params.id);
+        }
+        else {
+            result = await queries.removeLike(req.params.id)
+        };
         if (!result) {
             return res.status(404).json({ message: 'Blog not found' });
         }

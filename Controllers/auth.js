@@ -11,15 +11,19 @@ export async function authenticateAdmin(req, res) {
     try {
         const user = await queries.getAdmin(req.body.email);
 
-        if (!user || !(await compare(req.body.password, user.password))) {
+        console.log(req.body.password, user.password);
+
+        if (!user || !(req.body.password == user.password)) {   // we should hash passwords in the database and use bcrypt compare 
             return res.status(401).json({ message: 'Invalid email or password' });
         }
+        console.log('here');
+
 
         const tokenPayload = {
             name: user.name,
             email: user.email,
             id: user.id,
-            admin: true,
+            admin: (req.body.email == 'moofk2002@gmail.com'),
         };
 
         const token = jwt.signToken(tokenPayload);
